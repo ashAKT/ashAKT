@@ -1,16 +1,9 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/ashAKT/python-threat-intelligence/main/assets/profile-banner.svg" alt="Dark code editor themed profile banner" width="100%">
+  <img src="https://raw.githubusercontent.com/ashAKT/python-threat-intelligence/main/assets/profile-banner.svg" alt="Cyberpunk neon synthwave banner" width="100%">
 </div>
 
 <div align="center">
 
-```javascript
-const profile = {
-  theme: "dark-editor",
-  mode: "creative",
-  status: "online",
-  access: "granted"
-};
-```
+`// SIGNAL FOUND · CONNECTION ESTABLISHED · NIGHT MODE ON_`
 
 </div>
