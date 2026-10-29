@@ -1,6 +1,6 @@
 `[ access granted ]`
 
-Cybersecurity • Threat research • Python tools
+Cybersecurity • Threat research
 
 ```text
 $ observe
