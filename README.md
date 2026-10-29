@@ -3,7 +3,7 @@
 </div>
 
 ```text
-$ observe
-$ investigate
-$ defend
+$ anticipate
+$ threat_hunt
+$ harden
 ```
