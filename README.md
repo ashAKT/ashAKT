@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="https://raw.githubusercontent.com/ashAKT/python-threat-intelligence/main/assets/profile-banner.svg" alt="Cybersecurity and threat intelligence banner" width="100%">
+</div>
+
 ## 🛡️ About Me
 
 I'm a **SOC Analyst L2** focused on security operations, threat hunting, threat intelligence, and digital forensics.
