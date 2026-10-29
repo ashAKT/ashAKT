@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/ashAKT/python-threat-intelligence/main/assets/profile-banner.svg" alt="Animated hacker terminal with digital rain" width="100%">
+  <img src="https://raw.githubusercontent.com/ashAKT/python-threat-intelligence/main/assets/profile-banner.svg" alt="Cinematic neon hacker city banner" width="100%">
 </div>
 
 <div align="center">
