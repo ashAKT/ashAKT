@@ -1,5 +1,3 @@
-`[ access granted ]`
-
 Cybersecurity • Threat research
 
 ```text
