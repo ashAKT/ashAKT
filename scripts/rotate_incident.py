@@ -157,5 +157,5 @@ for index, (year, name, brief) in enumerate(items):
         '</g>'
     ])
 svg.append('</svg>')
-(ROOT / "assets" / "incident-rotation.svg").write_text("\\n".join(svg) + "\\n", encoding="utf-8")
+(ROOT / "assets" / "incident-rotation.svg").write_text("\n".join(svg) + "\n", encoding="utf-8")
 print(f"Rendered continuous ticker with {len(items)} incident briefs; one cycle takes 10 minutes.")
