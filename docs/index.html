@@ -1,85 +1,83 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#050812">
-<meta name="description" content="Animated cyberpunk threat intelligence map powered by public Feodo Tracker indicators.">
-<title>Cyber Threat Radar | ashAKT</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050812"><meta name="description" content="3D open-source cyber threat intelligence globe by ashAKT">
+<title>3D Global Threat Radar | ashAKT</title>
 <style>
-:root{color-scheme:dark;--bg:#050812;--panel:rgba(9,17,32,.91);--line:rgba(0,238,255,.22);--cyan:#00efff;--pink:#ff2bd6;--green:#9dffb0;--muted:#8298b2}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#10233b 0,#070d1b 42%,#03050b 100%);color:#d9f8ff;font:13px/1.5 Inter,ui-monospace,SFMono-Regular,Consolas,monospace;min-height:100vh}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:10;opacity:.13;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,238,255,.13) 4px);mix-blend-mode:screen}
-main{max-width:1440px;margin:auto;padding:24px 22px 38px}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:17px}
-.brand{display:flex;align-items:center;gap:13px}.sigil{width:42px;height:42px;border:1px solid var(--cyan);display:grid;place-items:center;color:var(--cyan);font-size:22px;box-shadow:0 0 18px #00efff55,inset 0 0 14px #00efff22;transform:rotate(45deg)}.sigil span{transform:rotate(-45deg)}
-.kicker{font-size:10px;letter-spacing:.25em;color:var(--cyan);text-transform:uppercase}h1{font-size:clamp(21px,3vw,32px);letter-spacing:.09em;margin:2px 0;font-weight:800;text-transform:uppercase;text-shadow:0 0 18px #00efff55}.sub{margin:0;color:var(--muted);font-size:11px;letter-spacing:.08em}
-.live{border:1px solid #ff2bd677;color:#ff78e5;padding:8px 12px;letter-spacing:.14em;font-size:10px;background:#ff2bd610;white-space:nowrap}.blink{display:inline-block;width:7px;height:7px;background:#ff2bd6;border-radius:50%;margin-right:8px;box-shadow:0 0 10px #ff2bd6;animation:blink 1.2s infinite}
-@keyframes blink{50%{opacity:.2;box-shadow:0 0 2px #ff2bd6}}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}.stat,.panel{background:var(--panel);border:1px solid var(--line);box-shadow:0 0 22px #00efff08,inset 0 0 22px #00efff05;backdrop-filter:blur(8px)}
-.stat{padding:12px 15px;position:relative;overflow:hidden}.stat:after{content:"";position:absolute;bottom:0;left:0;width:38%;height:1px;background:var(--cyan);box-shadow:0 0 9px var(--cyan)}.stat label{display:block;color:var(--muted);font-size:9px;letter-spacing:.18em;text-transform:uppercase}.stat strong{display:block;font-size:clamp(20px,3vw,29px);color:var(--cyan);letter-spacing:.04em;margin-top:4px;text-shadow:0 0 14px #00efff55}.stat:nth-child(2) strong{color:var(--pink);text-shadow:0 0 14px #ff2bd655}.stat:nth-child(3) strong{color:var(--green);text-shadow:0 0 14px #9dffb055}.stat small{color:var(--muted);font-size:9px}
-.map-panel{position:relative}.map-head{height:43px;padding:0 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:10px}.map-head b{font-size:10px;letter-spacing:.16em;color:var(--cyan);font-weight:600}.map-head span{font-size:9px;color:var(--muted);letter-spacing:.08em}#map{height:min(62vh,620px);min-height:380px;background:#050b16}
-.map-overlay{position:absolute;z-index:500;pointer-events:none;inset:44px 0 0;background:linear-gradient(90deg,rgba(0,239,255,.035) 1px,transparent 1px),linear-gradient(rgba(0,239,255,.035) 1px,transparent 1px);background-size:48px 48px;mix-blend-mode:screen}
-.map-overlay:after{content:"";position:absolute;left:0;right:0;height:2px;top:0;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.48;box-shadow:0 0 16px var(--cyan);animation:scan 8s linear infinite}
-@keyframes scan{to{top:100%}}
-.bottom{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:10px;margin-top:10px}.list{padding:13px 15px;min-height:130px}.list h2{font-size:10px;color:var(--cyan);letter-spacing:.17em;text-transform:uppercase;margin:0 0 8px}.row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid #173044;font-size:10px}.row:last-child{border:0}.row span{color:var(--muted);text-align:right}.feedline{color:var(--muted);font-size:10px;line-height:1.8}.feedline strong{color:var(--green);font-weight:500}.foot{font-size:9px;color:#71859d;line-height:1.7;margin:13px 2px}.foot a{color:var(--cyan);text-decoration:none}.leaflet-container{background:#06101c}.leaflet-control-attribution{background:#06101c!important;color:#6f8aa3!important;font-size:9px!important}.leaflet-control-attribution a{color:#00cfe0!important}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#071525;color:#d9f8ff;border:1px solid #00efff66;box-shadow:0 0 20px #00efff22}.leaflet-popup-content{font:11px/1.7 ui-monospace,monospace}.leaflet-control-zoom a{background:#071525!important;color:var(--cyan)!important;border-color:#00efff44!important}
-.pulse-marker{width:12px;height:12px;border-radius:50%;background:var(--pink);border:2px solid #fff;box-shadow:0 0 8px var(--pink),0 0 18px var(--pink);position:relative}.pulse-marker:after{content:"";position:absolute;inset:-8px;border:1px solid var(--pink);border-radius:50%;animation:ripple 2s ease-out infinite}
-@keyframes ripple{0%{transform:scale(.35);opacity:1}100%{transform:scale(2.8);opacity:0}}
-@media(max-width:760px){main{padding:17px 12px}.top{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.bottom{grid-template-columns:1fr}#map{height:430px}.map-head span{display:none}}
+:root{color-scheme:dark;--bg:#050812;--panel:rgba(7,16,31,.88);--line:#00dff044;--cyan:#00efff;--pink:#ff36d7;--muted:#8298b2;--green:#a1ffb5}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 35%,#10243c 0,#060b17 54%,#02040a 100%);color:#dffaff;font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-x:hidden}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:4;opacity:.08;background:repeating-linear-gradient(0deg,transparent 0 3px,#00eaff 4px)}
+header{height:76px;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid var(--line);background:#050b16bb;position:relative;z-index:5}
+.brand{display:flex;gap:13px;align-items:center}.mark{width:40px;height:40px;border:1px solid var(--cyan);display:grid;place-items:center;color:var(--cyan);font-size:24px;box-shadow:0 0 18px #00efff55}.eyebrow{color:var(--cyan);font-size:9px;letter-spacing:.25em}h1{font-size:clamp(17px,2.4vw,25px);letter-spacing:.1em;margin:1px 0;text-transform:uppercase}.subtitle{color:var(--muted);font-size:9px;letter-spacing:.12em}
+.status{border:1px solid #ff36d766;color:#ff83e6;padding:8px 12px;letter-spacing:.12em;font-size:9px}.dot{display:inline-block;width:7px;height:7px;background:#ff36d7;border-radius:50%;margin-right:8px;box-shadow:0 0 10px #ff36d7;animation:pulse 1.3s infinite}@keyframes pulse{50%{opacity:.25}}
+main{max-width:1600px;margin:auto;padding:16px 20px 26px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.metric,.panel{background:var(--panel);border:1px solid var(--line);box-shadow:inset 0 0 24px #00efff08,0 0 22px #00efff08;backdrop-filter:blur(8px)}.metric{padding:10px 14px}.metric label{display:block;color:var(--muted);font-size:9px;letter-spacing:.15em;text-transform:uppercase}.metric strong{display:block;color:var(--cyan);font-size:25px;margin-top:2px;text-shadow:0 0 15px #00efff55}.metric:nth-child(2) strong{color:var(--pink)}.metric:nth-child(3) strong{color:var(--green)}.metric small{font-size:8px;color:#647e98}
+.stage{height:min(66vh,690px);min-height:430px;position:relative;border:1px solid var(--line);background:radial-gradient(ellipse at 50% 50%,#0b1b30aa,transparent 65%),#030814;overflow:hidden}.stage:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#00efff08 1px,transparent 1px),linear-gradient(#00efff08 1px,transparent 1px);background-size:54px 54px;z-index:1}
+#globe{position:absolute;inset:0;width:100%;height:100%;display:block}.maplabel{position:absolute;z-index:2;top:14px;left:16px;color:var(--cyan);font-size:9px;letter-spacing:.18em}.legend{position:absolute;z-index:2;bottom:14px;left:16px;display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:9px}.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}.controls{position:absolute;z-index:3;right:14px;top:12px;display:flex;gap:6px}.controls button{background:#071626dd;border:1px solid #00efff55;color:#a9faff;padding:7px 10px;font:9px ui-monospace,monospace;cursor:pointer}.controls button:hover{border-color:var(--cyan);box-shadow:0 0 12px #00efff44}.hint{position:absolute;right:16px;bottom:14px;color:#738da5;font-size:9px;z-index:2}
+.lower{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:10px;margin-top:10px}.panel{padding:12px 14px;min-height:132px}.panel h2{font-size:9px;color:var(--cyan);letter-spacing:.17em;margin:0 0 8px}.entry{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #183044;font-size:10px}.entry:last-child{border:0}.entry span{color:var(--muted)}.feednote{color:var(--muted);font-size:10px;line-height:1.8}.feednote b{color:var(--green);font-weight:500}.footer{color:#71869d;font-size:9px;line-height:1.7;margin:12px 2px}.footer a{color:var(--cyan);text-decoration:none}
+@media(max-width:760px){header{padding:10px 13px;height:auto;gap:10px;align-items:flex-start;flex-direction:column}.status{align-self:flex-start}.metrics{grid-template-columns:repeat(2,1fr)}main{padding:12px}.stage{height:470px;min-height:470px}.lower{grid-template-columns:1fr}.hint{display:none}}
 </style>
-</head>
-<body>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head><body>
+<header><div class="brand"><div class="mark">⌖</div><div><div class="eyebrow">ashAKT // SECURITY OPERATIONS</div><h1>3D Global Threat Radar</h1><div class="subtitle">OPEN-SOURCE THREAT INTELLIGENCE · SPATIAL VISUALIZATION</div></div></div><div class="status"><i class="dot"></i>RADAR <span id="feedStatus">INITIALIZING</span></div></header>
 <main>
-<header class="top">
- <div class="brand"><div class="sigil"><span>⌖</span></div><div><div class="kicker">ashAKT // threat intelligence network</div><h1>Global Cyber Threat Radar</h1><p class="sub">OPEN-SOURCE INDICATORS · GLOBAL INFRASTRUCTURE VIEW</p></div></div>
- <div class="live"><i class="blink"></i>RADAR ONLINE / FEED STATUS: <span id="status">SYNCING</span></div>
-</header>
-<section class="stats">
- <div class="stat"><label>Tracked IPv4 indicators</label><strong id="total">---</strong><small>FEODO TRACKER SNAPSHOT</small></div>
- <div class="stat"><label>Reported locations</label><strong id="countries">---</strong><small>COUNTRY ATTRIBUTION</small></div>
- <div class="stat"><label>Threat families</label><strong id="families">---</strong><small>OBSERVED LABELS</small></div>
- <div class="stat"><label>Last data refresh</label><strong id="updated" style="font-size:15px">---</strong><small>UTC TIMESTAMP</small></div>
+<section class="metrics">
+<div class="metric"><label>IPv4 indicators</label><strong id="total">---</strong><small>FEODO TRACKER SNAPSHOT</small></div>
+<div class="metric"><label>Countries represented</label><strong id="countries">---</strong><small>COUNTRY ATTRIBUTION</small></div>
+<div class="metric"><label>Threat families</label><strong id="families">---</strong><small>OBSERVED MALWARE LABELS</small></div>
+<div class="metric"><label>Last refresh (UTC)</label><strong id="updated" style="font-size:15px">---</strong><small>DATASET TIMESTAMP</small></div>
 </section>
-<section class="panel map-panel">
- <div class="map-head"><b>◈ GLOBAL INDICATOR DISTRIBUTION</b><span>ANIMATED PULSE = REPORTED COUNTRY · NOT LIVE ATTACK TRAFFIC</span></div>
- <div id="map" role="img" aria-label="Animated world map showing public threat intelligence indicators by reported country"></div><div class="map-overlay"></div>
+<section class="stage"><div class="maplabel">◈ PLANETARY THREAT INTELLIGENCE / EARTH-01</div><div class="controls"><button id="rotate">ROTATION: ON</button><button id="reset">RESET VIEW</button></div><canvas id="globe" aria-label="Interactive 3D globe showing country-level threat intelligence indicator concentrations"></canvas><div class="legend"><span><i style="background:#ff36d7"></i>INDICATOR HOTSPOT</span><span><i style="background:#00efff"></i>INTELLIGENCE ROUTE</span><span><i style="background:#a1ffb5"></i>PUBLIC FEED</span></div><div class="hint">DRAG TO ORBIT · SCROLL TO ZOOM</div></section>
+<section class="lower">
+<div class="panel"><h2>◈ TOP REPORTED LOCATIONS</h2><div id="topCountries" class="feednote">Loading snapshot…</div></div>
+<div class="panel"><h2>◈ THREAT FAMILY DISTRIBUTION</h2><div id="topFamilies" class="feednote">Loading snapshot…</div></div>
+<div class="panel"><h2>◈ DATA PROVENANCE</h2><div class="feednote">SOURCE: <b>abuse.ch / Feodo Tracker</b><br>TYPE: Public recommended IP blocklist<br>VISUAL: Country-level indicator distribution and illustrative connections<br>REFRESH: GitHub Actions scheduled snapshot</div></div>
 </section>
-<section class="bottom">
- <div class="panel list"><h2>◈ Highest indicator concentration</h2><div id="top-countries" class="feedline">Awaiting feed…</div></div>
- <div class="panel list"><h2>◈ Threat family telemetry</h2><div id="top-malware" class="feedline">Awaiting feed…</div></div>
- <div class="panel list"><h2>◈ Intelligence feed</h2><div class="feedline">SOURCE: <strong>abuse.ch / Feodo Tracker</strong><br>COLLECTION: Public recommended IP blocklist<br>VISUALIZATION: Country-level attribution from feed metadata<br>MODE: Periodic snapshot refresh via GitHub Actions</div></div>
-</section>
-<p class="foot">DISCLAIMER: This interface visualizes published open-source threat-intelligence indicators. It does not represent live network telemetry, confirmed attacks, victims, or activity targeting ashAKT. Country attribution may indicate hosting or infrastructure location and can be imprecise. Feed: <a href="https://feodotracker.abuse.ch/" rel="noopener">abuse.ch Feodo Tracker</a>. Map tiles © CARTO / OpenStreetMap. <span id="notice"></span></p>
-<p class="foot"><a href="https://github.com/ashAKT/ashAKT">← RETURN TO GITHUB PROFILE</a></p>
+<p class="footer">IMPORTANT: This globe visualizes published open-source indicators and country attribution. Animated connections are illustrative visual links between reported locations; they are NOT observed attack paths, live traffic, victims, or attacks targeting ashAKT. IP geolocation may identify hosting infrastructure rather than an actor's physical location. Source: <a href="https://feodotracker.abuse.ch/" target="_blank" rel="noopener">Feodo Tracker</a>. Country boundaries: Natural Earth. Three.js and OrbitControls.</p>
+<p class="footer"><a href="https://github.com/ashAKT/ashAKT">← GITHUB PROFILE</a></p>
 </main>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-<script>
-(async()=>{
- const $=id=>document.getElementById(id),fmt=n=>Number(n||0).toLocaleString();
- const map=L.map('map',{scrollWheelZoom:false,worldCopyJump:true,zoomControl:true}).setView([22,5],2);
- L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:8}).addTo(map);
- const layer=L.layerGroup().addTo(map);
- try{
-  const [dr,gr]=await Promise.all([fetch('./data/threats.json?'+Date.now(),{cache:'no-store'}),fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')]);
-  if(!dr.ok)throw Error('Threat snapshot unavailable ('+dr.status+')');
-  const data=await dr.json(),geo=gr.ok?await gr.json():null;
-  const entries=Object.entries(data.countries||{}).filter(([c])=>c!=='ZZ').sort((a,b)=>b[1]-a[1]);
-  const names=new Intl.DisplayNames(['en'],{type:'region'}),countryName=c=>{try{return names.of(c)||c}catch(e){return c}};
-  const malware={};(data.records||[]).forEach(r=>{const m=r.malware||'Unknown';malware[m]=(malware[m]||0)+1});
-  $('total').textContent=fmt(data.total);$('countries').textContent=fmt(entries.length);$('families').textContent=fmt(Object.keys(malware).filter(x=>x!=='Unknown').length);
-  $('updated').textContent=new Date(data.updated_at).toLocaleString('en-IN',{timeZone:'UTC',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})+'Z';
-  $('status').textContent='CONNECTED';$('notice').textContent=' SNAPSHOT: '+data.updated_at;
-  if(geo)geo.features.forEach(f=>{
-   const p=f.properties||{},code=(p.ISO_A2||p.iso_a2||'').toUpperCase(),count=(data.countries||{})[code];
-   if(!count)return;const b=L.geoJSON(f).getBounds();if(!b.isValid())return;const center=b.getCenter();
-   const marker=L.marker(center,{icon:L.divIcon({className:'',html:'<div class="pulse-marker"></div>',iconSize:[12,12],iconAnchor:[6,6]})});
-   marker.bindPopup('<b style="color:#00efff">'+countryName(code)+'</b><br>'+fmt(count)+' public IP indicators<br><span style="color:#8298b2">Source: Feodo Tracker</span>').addTo(layer);
-   L.circle(center,{radius:Math.max(90000,Math.min(450000,count*18000)),color:'#ff2bd6',weight:1,opacity:.35,fillColor:'#ff2bd6',fillOpacity:.06}).addTo(layer);
-  });
-  $('top-countries').innerHTML=entries.slice(0,6).map(([c,n])=>'<div class="row"><b>'+countryName(c)+'</b><span>'+fmt(n)+' IPs</span></div>').join('')||'No country-coded indicators in this snapshot.';
-  $('top-malware').innerHTML=Object.entries(malware).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([m,n])=>'<div class="row"><b>'+m.replace(/[&<>"]/g,'')+'</b><span>'+fmt(n)+'</span></div>').join('')||'No family labels in this snapshot.';
- }catch(e){$('status').textContent='FEED ERROR';$('status').style.color='#ff658e';$('notice').textContent=' '+e.message;$('top-countries').textContent='Unable to load the current feed snapshot.';$('top-malware').textContent='Unable to load the current feed snapshot.'}
-})();
-</script>
-</body>
-</html>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const canvas=document.querySelector('#globe'),stage=canvas.parentElement;
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(38,1,.1,100);camera.position.set(0,0,4.1);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.045;controls.minDistance=2.5;controls.maxDistance=7;
+scene.add(new THREE.AmbientLight(0x6b9ab8,1.1));const key=new THREE.PointLight(0x00dfff,28,10);key.position.set(3,2,4);scene.add(key);const rim=new THREE.PointLight(0xff28cf,15,9);rim.position.set(-3,-1,-3);scene.add(rim);
+const root=new THREE.Group();scene.add(root);
+const globeMat=new THREE.MeshPhongMaterial({color:0x071c31,emissive:0x03101d,shininess:22,specular:0x174b66});
+const globe=new THREE.Mesh(new THREE.SphereGeometry(1,96,64),globeMat);root.add(globe);
+const wire=new THREE.Mesh(new THREE.SphereGeometry(1.006,48,32),new THREE.MeshBasicMaterial({color:0x00bcd4,wireframe:true,transparent:true,opacity:.13}));root.add(wire);
+const atmosphere=new THREE.Mesh(new THREE.SphereGeometry(1.045,64,48),new THREE.MeshBasicMaterial({color:0x00bfff,transparent:true,opacity:.055,side:THREE.BackSide}));root.add(atmosphere);
+const stars=new THREE.BufferGeometry(),starPts=[];for(let i=0;i<1500;i++){const v=new THREE.Vector3().randomDirection().multiplyScalar(THREE.MathUtils.randFloat(2.2,8));starPts.push(v.x,v.y,v.z)}stars.setAttribute('position',new THREE.Float32BufferAttribute(starPts,3));scene.add(new THREE.Points(stars,new THREE.PointsMaterial({color:0x6c9ebd,size:.009,transparent:true,opacity:.7})));
+const latlon=(lat,lon,r=1.012)=>{const phi=(90-lat)*Math.PI/180,theta=(lon+180)*Math.PI/180;return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(theta),r*Math.cos(phi),r*Math.sin(phi)*Math.sin(theta))};
+const gridMat=new THREE.LineBasicMaterial({color:0x00b8d0,transparent:true,opacity:.2});
+for(let lat=-60;lat<=60;lat+=30){const pts=[];for(let lon=-180;lon<=180;lon+=3)pts.push(latlon(lat,lon,1.008));root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),gridMat))}
+for(let lon=-180;lon<180;lon+=30){const pts=[];for(let lat=-90;lat<=90;lat+=3)pts.push(latlon(lat,lon,1.008));root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),gridMat))}
+const hotspotGroup=new THREE.Group();root.add(hotspotGroup);
+const routeGroup=new THREE.Group();root.add(routeGroup);
+const materialPink=new THREE.MeshBasicMaterial({color:0xff36d7}),materialCyan=new THREE.MeshBasicMaterial({color:0x00efff});
+function addHotspot(lat,lon,count,name){const p=latlon(lat,lon,1.025),size=Math.min(.032,.009+Math.log10(count+1)*.006);const dot=new THREE.Mesh(new THREE.SphereGeometry(size,12,10),materialPink);dot.position.copy(p);hotspotGroup.add(dot);const ring=new THREE.Mesh(new THREE.RingGeometry(size*1.7,size*2,32),new THREE.MeshBasicMaterial({color:0xff36d7,transparent:true,opacity:.75,side:THREE.DoubleSide}));ring.position.copy(p.clone().multiplyScalar(1.002));ring.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),p.clone().normalize());hotspotGroup.add(ring);ring.userData.phase=Math.random()*Math.PI*2;dot.userData.ring=ring;dot.userData.base=size;dot.userData.name=name;dot.userData.count=count;return p}
+const countryCenters={};
+function centerFromGeometry(geometry){let coords=[];const walk=a=>{if(typeof a[0]==='number')coords.push(a);else a.forEach(walk)};walk(geometry.coordinates);if(!coords.length)return null;let x=0,y=0;coords.forEach(c=>{x+=c[0];y+=c[1]});return [y/coords.length,x/coords.length]}
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(stage);resize();
+let autoRotate=true;document.querySelector('#rotate').onclick=()=>{autoRotate=!autoRotate;document.querySelector('#rotate').textContent='ROTATION: '+(autoRotate?'ON':'OFF')};document.querySelector('#reset').onclick=()=>{camera.position.set(0,0,4.1);controls.target.set(0,0,0);root.rotation.set(0,0,0)};
+let clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);const t=clock.getElapsedTime();if(autoRotate)root.rotation.y+=.0018;hotspotGroup.children.forEach(o=>{if(o.userData.ring){const s=1+(.23*Math.sin(t*2+o.userData.ring.userData.phase));o.userData.ring.scale.setScalar(s);o.userData.ring.material.opacity=.4+.4*Math.sin(t*2+o.userData.ring.userData.phase)}});controls.update();renderer.render(scene,camera)}animate();
+const fmt=n=>Number(n||0).toLocaleString(),escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+try{
+ const [res,geoRes]=await Promise.all([fetch('./data/threats.json?'+Date.now(),{cache:'no-store'}),fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')]);
+ if(!res.ok)throw Error('Snapshot unavailable: '+res.status);
+ const data=await res.json(),geo=geoRes.ok?await geoRes.json():null;
+ const counts=data.countries||{},names=new Intl.DisplayNames(['en'],{type:'region'}),label=c=>{try{return names.of(c)||c}catch{return c}};
+ const entries=Object.entries(counts).filter(([c])=>c!=='ZZ').sort((a,b)=>b[1]-a[1]);
+ const malware={};(data.records||[]).forEach(r=>{const m=r.malware||'Unknown';malware[m]=(malware[m]||0)+1});
+ document.querySelector('#total').textContent=fmt(data.total);document.querySelector('#countries').textContent=fmt(entries.length);document.querySelector('#families').textContent=fmt(Object.keys(malware).filter(x=>x!=='Unknown').length);document.querySelector('#updated').textContent=new Date(data.updated_at).toISOString().replace('T',' ').slice(0,16);
+ document.querySelector('#feedStatus').textContent='FEED CONNECTED';
+ if(geo){geo.features.forEach(f=>{const p=f.properties||{},code=(p.ISO_A2||p.iso_a2||'').toUpperCase(),count=counts[code];if(!count||code==='-')return;const c=centerFromGeometry(f.geometry);if(c)countryCenters[code]=c});}
+ const top=entries.slice(0,16);top.forEach(([code,count])=>{const c=countryCenters[code];if(c)addHotspot(c[0],c[1],count,label(code))});
+ // Draw illustrative arcs between countries with indicators. These are not observed attack paths.
+ const locations=top.filter(([code])=>countryCenters[code]).slice(0,10);
+ for(let i=0;i<locations.length;i++){const a=countryCenters[locations[i][0]];const b=countryCenters[locations[(i+3)%locations.length][0]];if(!a||!b)continue;const start=latlon(a[0],a[1],1.02),end=latlon(b[0],b[1],1.02),mid=start.clone().add(end).normalize().multiplyScalar(1.25+Math.random()*.16);const curve=new THREE.QuadraticBezierCurve3(start,mid,end);const line=new THREE.Mesh(new THREE.TubeGeometry(curve,48,.0018,5,false),new THREE.MeshBasicMaterial({color:0x00efff,transparent:true,opacity:.5}));routeGroup.add(line)}
+ document.querySelector('#topCountries').innerHTML=entries.slice(0,6).map(([c,n])=>'<div class="entry"><b>'+escapeHtml(label(c))+'</b><span>'+fmt(n)+' indicators</span></div>').join('')||'No country-coded indicators in this snapshot.';
+ document.querySelector('#topFamilies').innerHTML=Object.entries(malware).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([m,n])=>'<div class="entry"><b>'+escapeHtml(m)+'</b><span>'+fmt(n)+'</span></div>').join('')||'No family labels in this snapshot.';
+}catch(e){document.querySelector('#feedStatus').textContent='FEED ERROR';document.querySelector('#feedStatus').style.color='#ff7aa9';document.querySelector('#topCountries').textContent=e.message;document.querySelector('#topFamilies').textContent='Check the scheduled data refresh workflow.'}
+</script></body></html>
