@@ -1,6 +1,10 @@
 name: Rotate cybersecurity incident brief
 
 on:
+  push:
+    paths:
+      - "scripts/rotate_incident.py"
+      - ".github/workflows/rotate-incident.yml"
   schedule:
     - cron: "17 */6 * * *"
   workflow_dispatch:
