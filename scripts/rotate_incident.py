@@ -146,6 +146,10 @@ readme = f"""<div align="center">
 
   <img src="{typing_url}" alt="Continuously rotating briefs of 100 landmark cybersecurity incidents" width="100%">
 
+  <br>
+
+  <a href="https://github.com/ashAKT/ashAKT/blob/main/CYBER_INCIDENTS.md"><strong>Explore all 100 cybersecurity incidents — what happened and their impact →</strong></a>
+
 </div>
 """
 (ROOT / "README.md").write_text(readme, encoding="utf-8")
