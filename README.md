@@ -4,6 +4,6 @@
 
   <br><br>
 
-  <img src="https://readme-typing-svg.demolab.com/?font=Fira+Code&size=18&pause=1100&color=00FF99&center=true&vCenter=true&width=500&lines=Always+Learning" alt="Always Learning">
+  <img src="https://readme-typing-svg.demolab.com/?font=Fira+Code&size=15&pause=1100&color=00FF99&center=true&vCenter=true&width=950&lines=Cybersecurity+History%3A+Stuxnet+-+A+worm+that+manipulated+industrial+control+systems" alt="Cybersecurity incident brief">
 
 </div>
