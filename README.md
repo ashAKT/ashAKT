@@ -4,6 +4,6 @@
 
 <br>
 
-<img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/incident-ticker.svg" alt="Animated multiline cybersecurity incident ticker" width="100%">
+<img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/incident-ticker.gif" alt="Animated multiline typewriter cybersecurity incident ticker" width="100%">
 
 </div>
