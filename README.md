@@ -5,7 +5,7 @@
   <br><br>
 
   <a href="https://github.com/ashAKT/ashAKT">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=19&duration=2800&pause=900&color=00F7A5&center=true&vCenter=true&width=1000&height=90&lines=%3E+2021+%2F+LOG4SHELL+%3A+REMOTE+CODE+EXECUTION;%3E+2017+%2F+NOTPETYA+%3A+DESTRUCTIVE+WIPER;%3E+2017+%2F+WANNACRY+%3A+GLOBAL+RANSOMWARE;%3E+2023+%2F+3CX+%3A+SUPPLY-CHAIN+COMPROMISE;%3E+2024+%2F+ANYDESK+%3A+PRODUCTION+SYSTEM+BREACH" alt="Typewriter animation showing landmark cybersecurity incidents">
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=15&duration=3200&pause=1100&color=00F7A5&center=true&vCenter=true&width=1100&height=120&lines=%3E+2021+%2F+LOG4SHELL+%E2%80%94+Critical+Log4j+flaw+enabled+remote+code+execution.;%3E+2017+%2F+NOTPETYA+%E2%80%94+Destructive+wiper+spread+through+a+trusted+software+update.;%3E+2017+%2F+WANNACRY+%E2%80%94+Ransomware+spread+globally+by+exploiting+SMB.;%3E+2023+%2F+3CX+%E2%80%94+Compromised+software+updates+delivered+a+backdoor.;%3E+2024+%2F+ANYDESK+%E2%80%94+Production+systems+were+accessed+in+a+security+breach." alt="Typewriter animation showing cybersecurity incident titles and descriptions">
   </a>
 
 </div>
