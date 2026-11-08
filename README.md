@@ -1,5 +1,9 @@
 <div align="center">
 
+<img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/minimal-cyber-banner.svg" alt="Minimal cyber banner" width="100%">
+
+<br>
+
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&amp;weight=500&amp;size=14&amp;duration=3200&amp;pause=1800&amp;color=00F7A5&amp;center=true&amp;vCenter=true&amp;width=1000&amp;height=90&amp;repeat=true&amp;lines=2017+%2F+NOTPETYA+%E2%80%94+Global+businesses+faced+destructive+outages%2C+with+reported+losses+of+hundreds+of+millions+of+dollars.;2017+%2F+WANNACRY+%E2%80%94+Around+200%2C000+computers+across+150%2B+countries+were+affected%2C+disrupting+healthcare+and+businesses.;2017+%2F+EQUIFAX+%E2%80%94+Personal+data+of+about+147+million+people+was+exposed+in+one+of+the+largest+US+data+breaches.;2020+%2F+SOLARWINDS+SUNBURST+%E2%80%94+A+trusted+software+update+campaign+enabled+espionage+across+government+and+enterprise+networks.;2021+%2F+COLONIAL+PIPELINE+%E2%80%94+Ransomware+forced+a+major+US+fuel+pipeline+to+shut+down+temporarily." alt="Cyber incidents displayed one at a time" width="100%">
 
 </div>
