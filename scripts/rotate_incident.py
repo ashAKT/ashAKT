@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Randomly rotate a historical cyber-incident brief on the profile."""
 from pathlib import Path
-from urllib.parse import quote_plus
-import random, re
+import random, re, textwrap
+from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = """1988|Morris Worm|An early internet worm spread uncontrollably and disrupted thousands of Unix systems.|Thousands of systems were slowed or disabled; it exposed the fragility of the early internet.
@@ -127,30 +127,99 @@ catalog += ["", "## Further reading", "",
 "**Curation note:** This is an educational selection, not a definitive ranking. Some entries describe campaigns or broader incident patterns. Dates, attribution and impact figures should be verified against primary sources before formal reporting."]
 (ROOT / "CYBER_INCIDENTS.md").write_text("\n".join(catalog) + "\n", encoding="utf-8")
 
-# Shuffle the complete list and build a continuously animated typing-SVG URL.
-# The external typing-SVG renderer is used because GitHub's README image proxy
-# does not reliably play SVG SMIL animations.
+# Randomize the incidents and render a readable animated GIF for the README.
 random.shuffle(items)
-incident_lines = ";".join(f"{year} / {name}" for year, name, _ in items)
-typing_url = (
-    "https://readme-typing-svg.demolab.com/?"
-    "font=Fira+Code&size=16&duration=5000&pause=5000&color=00FF99"
-    "&center=true&vCenter=true&width=1000&height=50"
-    "&repeat=true&lines=" + quote_plus(incident_lines)
+
+# Keep the catalogue comprehensive, with separate incident and impact columns.
+catalog = ["# 100 landmark cybersecurity incidents", "",
+"An educational selection spanning malware, espionage, data breaches, ransomware, supply-chain compromise, financial theft and critical infrastructure. Each entry separates what happened from its operational, financial, privacy or societal impact.",
+"",
+"| # | Year | Incident | What happened | Impact |", "|---:|---:|---|---|---|"]
+for i, (year, name, brief, impact) in enumerate(items, 1):
+    catalog.append(f"| {i} | {year} | {name} | {brief} | {impact} |")
+catalog += ["", "## Further reading", "",
+"- [CSIS – Significant Cyber Incidents](https://www.csis.org/programs/strategic-technologies-program/significant-cyber-incidents)",
+"- [CERT-EU – Threat Landscape Report](https://cert.europa.eu/publications/tlr-10-years/)",
+"- [FBI – Morris Worm history](https://www.fbi.gov/news/stories/morris-worm-30-years-since-first-major-attack-on-internet-110218)",
+"- [Canadian Centre for Cyber Security – Operational technology incidents](https://www.cyber.gc.ca/en/guidance/cyber-threat-bulletin-cyber-threat-operational-technology)",
+"- [MITRE ATT&CK – SolarWinds compromise](https://attack.mitre.org/campaigns/C0024/)",
+"- [US GAO – SolarWinds and Microsoft Exchange](https://www.gao.gov/products/gao-22-104746)",
+"",
+"**Curation note:** Educational selection, not a definitive ranking. Some entries describe campaigns or broader incident patterns. Dates, attribution and impact figures should be verified against primary sources before formal reporting."]
+(ROOT / "CYBER_INCIDENTS.md").write_text("\n".join(catalog) + "\n", encoding="utf-8")
+
+# Animated GIFs are supported in GitHub README images. Each incident gets its
+# own slide so the full brief and impact remain readable rather than clipped
+# into a long one-line typing animation.
+WIDTH, HEIGHT = 1200, 260
+BG = (8, 15, 20)
+GREEN = (0, 255, 153)
+WHITE = (225, 235, 240)
+MUTED = (120, 150, 160)
+FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
+BOLD_FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
+title_font = ImageFont.truetype(BOLD_FONT_PATH, 27)
+label_font = ImageFont.truetype(BOLD_FONT_PATH, 18)
+body_font = ImageFont.truetype(FONT_PATH, 18)
+small_font = ImageFont.truetype(FONT_PATH, 15)
+
+def wrap_pixels(draw, text, font, max_width):
+    words = text.split()
+    lines, current = [], ""
+    for word in words:
+        candidate = f"{current} {word}".strip()
+        if draw.textbbox((0, 0), candidate, font=font)[2] <= max_width:
+            current = candidate
+        else:
+            if current:
+                lines.append(current)
+            current = word
+    if current:
+        lines.append(current)
+    return lines
+
+frames = []
+for index, (year, name, brief, impact) in enumerate(items, 1):
+    frame = Image.new("RGB", (WIDTH, HEIGHT), BG)
+    draw = ImageDraw.Draw(frame)
+    draw.rectangle((0, 0, WIDTH, 7), fill=GREEN)
+    draw.text((42, 25), "CYBER INCIDENT ARCHIVE  //  HISTORICAL CASE FILE", font=small_font, fill=MUTED)
+    draw.text((42, 55), f"{year}  |  {name}", font=title_font, fill=GREEN)
+    draw.line((42, 100, WIDTH - 42, 100), fill=(35, 75, 68), width=2)
+
+    y = 120
+    draw.text((42, y), "WHAT HAPPENED", font=label_font, fill=WHITE)
+    y += 30
+    for line in wrap_pixels(draw, brief, body_font, WIDTH - 84)[:2]:
+        draw.text((42, y), line, font=body_font, fill=WHITE)
+        y += 25
+
+    y += 7
+    draw.text((42, y), "IMPACT", font=label_font, fill=GREEN)
+    y += 30
+    for line in wrap_pixels(draw, impact, body_font, WIDTH - 84)[:2]:
+        draw.text((42, y), line, font=body_font, fill=WHITE)
+        y += 25
+
+    draw.text((WIDTH - 150, HEIGHT - 28), f"{index:03d} / 100", font=small_font, fill=MUTED)
+    frames.append(frame)
+
+gif_path = ROOT / "assets" / "cyber-incident-ticker.gif"
+gif_path.parent.mkdir(parents=True, exist_ok=True)
+frames[0].save(
+    gif_path, save_all=True, append_images=frames[1:],
+    duration=8000, loop=0, optimize=True, disposal=2
 )
+
 readme = f"""<div align="center">
 
   <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/minimal-cyber-banner.svg" alt="The best defense begins before the attack" width="100%">
 
   <br><br>
 
-  <img src="{typing_url}" alt="Continuously rotating briefs of 100 landmark cybersecurity incidents" width="100%">
-
-  <br>
-
-  <a href="https://github.com/ashAKT/ashAKT/blob/main/CYBER_INCIDENTS.md"><strong>Explore all 100 cybersecurity incidents — what happened and their impact →</strong></a>
+  <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/cyber-incident-ticker.gif" alt="Animated archive: 100 cybersecurity incidents, each showing what happened and its impact" width="100%">
 
 </div>
 """
 (ROOT / "README.md").write_text(readme, encoding="utf-8")
-print(f"Generated continuously animated ticker URL for {len(items)} incidents ({len(typing_url)} URL characters).")
+print(f"Generated a {len(frames)}-slide incident ticker GIF and the incident catalogue.")
