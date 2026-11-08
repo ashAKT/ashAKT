@@ -32,12 +32,13 @@ main{max-width:1600px;margin:auto;padding:16px 20px 26px}.metrics{display:grid;g
 <div class="panel"><h2>◈ THREAT FAMILY DISTRIBUTION</h2><div id="topFamilies" class="feednote">Loading snapshot…</div></div>
 <div class="panel"><h2>◈ DATA PROVENANCE</h2><div class="feednote">SOURCE: <b>abuse.ch / Feodo Tracker</b><br>TYPE: Public recommended IP blocklist<br>VISUAL: Country-level indicator distribution and illustrative connections<br>REFRESH: GitHub Actions scheduled snapshot</div></div>
 </section>
-<p class="footer">IMPORTANT: This globe visualizes published open-source indicators and country attribution. Animated connections are illustrative visual links between reported locations; they are NOT observed attack paths, live traffic, victims, or attacks targeting ashAKT. IP geolocation may identify hosting infrastructure rather than an actor's physical location. Source: <a href="https://feodotracker.abuse.ch/" target="_blank" rel="noopener">Feodo Tracker</a>. Country boundaries: Natural Earth. Three.js and OrbitControls.</p>
+<p class="footer">IMPORTANT: This globe visualizes published open-source indicators and country attribution. Animated connections are illustrative visual links between reported locations; they are NOT observed attack paths, live traffic, victims, or attacks targeting ashAKT. IP geolocation may identify hosting infrastructure rather than an actor's physical location. Source: <a href="https://feodotracker.abuse.ch/" target="_blank" rel="noopener">Feodo Tracker</a>. Country boundaries: Natural Earth 1:50m via D3 geographic projection. Three.js and OrbitControls.</p>
 <p class="footer"><a href="https://github.com/ashAKT/ashAKT">← GITHUB PROFILE</a></p>
 </main>
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {geoEquirectangular,geoPath,geoCentroid} from 'https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/+esm';
 const canvas=document.querySelector('#globe'),stage=canvas.parentElement;
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(38,1,.1,100);camera.position.set(0,0,4.1);
@@ -49,7 +50,7 @@ const globe=new THREE.Mesh(new THREE.SphereGeometry(1,96,64),globeMat);root.add(
 const wire=new THREE.Mesh(new THREE.SphereGeometry(1.006,48,32),new THREE.MeshBasicMaterial({color:0x00bcd4,wireframe:true,transparent:true,opacity:.13}));root.add(wire);
 const atmosphere=new THREE.Mesh(new THREE.SphereGeometry(1.045,64,48),new THREE.MeshBasicMaterial({color:0x00bfff,transparent:true,opacity:.055,side:THREE.BackSide}));root.add(atmosphere);
 const stars=new THREE.BufferGeometry(),starPts=[];for(let i=0;i<1500;i++){const v=new THREE.Vector3().randomDirection().multiplyScalar(THREE.MathUtils.randFloat(2.2,8));starPts.push(v.x,v.y,v.z)}stars.setAttribute('position',new THREE.Float32BufferAttribute(starPts,3));scene.add(new THREE.Points(stars,new THREE.PointsMaterial({color:0x6c9ebd,size:.009,transparent:true,opacity:.7})));
-const latlon=(lat,lon,r=1.012)=>{const phi=(90-lat)*Math.PI/180,theta=(lon+180)*Math.PI/180;return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(theta),r*Math.cos(phi),r*Math.sin(phi)*Math.sin(theta))};
+const latlon=(lat,lon,r=1.012)=>{const p=lat*Math.PI/180,l=lon*Math.PI/180;return new THREE.Vector3(r*Math.cos(p)*Math.sin(l),r*Math.sin(p),-r*Math.cos(p)*Math.cos(l))};
 const gridMat=new THREE.LineBasicMaterial({color:0x00b8d0,transparent:true,opacity:.2});
 for(let lat=-60;lat<=60;lat+=30){const pts=[];for(let lon=-180;lon<=180;lon+=3)pts.push(latlon(lat,lon,1.008));root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),gridMat))}
 for(let lon=-180;lon<180;lon+=30){const pts=[];for(let lat=-90;lat<=90;lat+=3)pts.push(latlon(lat,lon,1.008));root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),gridMat))}
@@ -58,13 +59,13 @@ const routeGroup=new THREE.Group();root.add(routeGroup);
 const materialPink=new THREE.MeshBasicMaterial({color:0xff36d7}),materialCyan=new THREE.MeshBasicMaterial({color:0x00efff});
 function addHotspot(lat,lon,count,name){const p=latlon(lat,lon,1.025),size=Math.min(.032,.009+Math.log10(count+1)*.006);const dot=new THREE.Mesh(new THREE.SphereGeometry(size,12,10),materialPink);dot.position.copy(p);hotspotGroup.add(dot);const ring=new THREE.Mesh(new THREE.RingGeometry(size*1.7,size*2,32),new THREE.MeshBasicMaterial({color:0xff36d7,transparent:true,opacity:.75,side:THREE.DoubleSide}));ring.position.copy(p.clone().multiplyScalar(1.002));ring.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),p.clone().normalize());hotspotGroup.add(ring);ring.userData.phase=Math.random()*Math.PI*2;dot.userData.ring=ring;dot.userData.base=size;dot.userData.name=name;dot.userData.count=count;return p}
 const countryCenters={};
-function centerFromGeometry(geometry){let coords=[];const walk=a=>{if(typeof a[0]==='number')coords.push(a);else a.forEach(walk)};walk(geometry.coordinates);if(!coords.length)return null;let x=0,y=0;coords.forEach(c=>{x+=c[0];y+=c[1]});return [y/coords.length,x/coords.length]}
+
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(stage);resize();
 let autoRotate=true;document.querySelector('#rotate').onclick=()=>{autoRotate=!autoRotate;document.querySelector('#rotate').textContent='ROTATION: '+(autoRotate?'ON':'OFF')};document.querySelector('#reset').onclick=()=>{camera.position.set(0,0,4.1);controls.target.set(0,0,0);root.rotation.set(0,0,0)};
 let clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);const t=clock.getElapsedTime();if(autoRotate)root.rotation.y+=.0018;hotspotGroup.children.forEach(o=>{if(o.userData.ring){const s=1+(.23*Math.sin(t*2+o.userData.ring.userData.phase));o.userData.ring.scale.setScalar(s);o.userData.ring.material.opacity=.4+.4*Math.sin(t*2+o.userData.ring.userData.phase)}});controls.update();renderer.render(scene,camera)}animate();
 const fmt=n=>Number(n||0).toLocaleString(),escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 try{
- const [res,geoRes]=await Promise.all([fetch('./data/threats.json?'+Date.now(),{cache:'no-store'}),fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')]);
+ const [res,geoRes]=await Promise.all([fetch('./data/threats.json?'+Date.now(),{cache:'no-store'}),fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson')]);
  if(!res.ok)throw Error('Snapshot unavailable: '+res.status);
  const data=await res.json(),geo=geoRes.ok?await geoRes.json():null;
  const counts=data.countries||{},names=new Intl.DisplayNames(['en'],{type:'region'}),label=c=>{try{return names.of(c)||c}catch{return c}};
@@ -72,7 +73,7 @@ try{
  const malware={};(data.records||[]).forEach(r=>{const m=r.malware||'Unknown';malware[m]=(malware[m]||0)+1});
  document.querySelector('#total').textContent=fmt(data.total);document.querySelector('#countries').textContent=fmt(entries.length);document.querySelector('#families').textContent=fmt(Object.keys(malware).filter(x=>x!=='Unknown').length);document.querySelector('#updated').textContent=new Date(data.updated_at).toISOString().replace('T',' ').slice(0,16);
  document.querySelector('#feedStatus').textContent='FEED CONNECTED';
- if(geo){const land=new THREE.Group();root.add(land);geo.features.forEach(f=>{const p=f.properties||{},code=(p.ISO_A2||p.iso_a2||'').toUpperCase(),count=counts[code];const c=centerFromGeometry(f.geometry);if(count&&c&&code!=='-')countryCenters[code]=c;const drawRing=ring=>{if(!Array.isArray(ring)||ring.length<3)return;const pts=ring.filter(v=>Array.isArray(v)&&v.length>=2).map(v=>latlon(v[1],v[0],1.008));if(pts.length<3)return;const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:count?0x00dff0:0x14516a,transparent:true,opacity:count ? 0.42 : 0.22}));land.add(line)};const walkCoords=(v,depth=0)=>{if(!Array.isArray(v))return;if(v.length&&typeof v[0][0]==='number')drawRing(v);else v.forEach(x=>walkCoords(x,depth+1))};if(f.geometry)walkCoords(f.geometry.coordinates)});}
+ if(geo){const texCanvas=document.createElement('canvas');texCanvas.width=4096;texCanvas.height=2048;const ctx=texCanvas.getContext('2d');ctx.fillStyle='#04111f';ctx.fillRect(0,0,texCanvas.width,texCanvas.height);const projection=geoEquirectangular().scale(texCanvas.width/(2*Math.PI)).translate([texCanvas.width/2,texCanvas.height/2]);const path=geoPath(projection,ctx);geo.features.forEach(f=>{const p=f.properties||{},code=(p.ISO_A2||p.iso_a2||'').toUpperCase();if(code&&code!=='-'){const centroid=geoCentroid(f);if(centroid&&Number.isFinite(centroid[0])&&Number.isFinite(centroid[1]))countryCenters[code]=[centroid[1],centroid[0]];}ctx.beginPath();path(f);ctx.fillStyle='#0b344b';ctx.fill();ctx.strokeStyle='#00d9ef';ctx.lineWidth=1.15;ctx.stroke();});const texture=new THREE.CanvasTexture(texCanvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=renderer.capabilities.getMaxAnisotropy();globe.material.map=texture;globe.material.color.set(0xffffff);globe.material.needsUpdate=true;}
  const top=entries.slice(0,16);top.forEach(([code,count])=>{const c=countryCenters[code];if(c)addHotspot(c[0],c[1],count,label(code))});
  // Draw illustrative arcs between countries with indicators. These are not observed attack paths.
  const locations=top.filter(([code])=>countryCenters[code]).slice(0,10);
