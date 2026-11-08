@@ -128,21 +128,34 @@ catalog += ["", "## Further reading", "",
 "**Curation note:** This is an educational selection, not a definitive ranking. Some entries describe campaigns or broader incident patterns. Dates, attribution and impact figures should be verified against primary sources before formal reporting."]
 (ROOT / "CYBER_INCIDENTS.md").write_text("\n".join(catalog) + "\n", encoding="utf-8")
 
-last_file = ROOT / ".github" / "last_incident.txt"
-last = last_file.read_text().strip() if last_file.exists() else ""
-choices = [x for i, x in enumerate(items, 1) if str(i) != last] or items
-year, name, brief = random.choice(choices)
-number = next(i for i, x in enumerate(items, 1) if x == (year, name, brief))
-display = f"{year} | {name}: {brief}"
-url = ("https://readme-typing-svg.demolab.com/?font=Fira+Code&size=15&pause=1100"
-       "&color=00FF99&center=true&vCenter=true&width=950&lines=" + quote_plus(display))
-readme_path = ROOT / "README.md"
-readme = readme_path.read_text(encoding="utf-8")
-pattern = r'<img src="https://readme-typing-svg\.demolab\.com/\?[^"]+" alt="[^"]*">'
-replacement = f'<img src="{url}" alt="Cybersecurity history: {name} ({year})">'
-updated, count = re.subn(pattern, replacement, readme, count=1)
-if count != 1:
-    raise SystemExit("Could not locate the typing animation image in README.md")
-readme_path.write_text(updated, encoding="utf-8")
-last_file.write_text(str(number) + "\n", encoding="utf-8")
-print(f"Selected incident #{number}: {name} ({year})")
+# Shuffle the complete list and render a continuously looping SVG ticker.
+random.shuffle(items)
+duration_seconds = 600
+slot = duration_seconds / len(items)
+
+def xml_escape(value):
+    return (value.replace("&", "&amp;").replace("<", "&lt;")
+                 .replace(">", "&gt;").replace('"', "&quot;")
+                 .replace("'", "&apos;"))
+
+svg = [
+    '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="118" viewBox="0 0 1000 118">',
+    '<rect width="100%" height="100%" rx="10" fill="#080d0b"/>',
+    '<rect x="1" y="1" width="998" height="116" rx="9" fill="none" stroke="#00ff99" stroke-opacity=".45"/>',
+    '<text x="28" y="30" fill="#00ff99" font-family="monospace" font-size="12" letter-spacing="2">CYBERSECURITY HISTORY • 100 LANDMARK INCIDENTS</text>',
+]
+for index, (year, name, brief) in enumerate(items):
+    begin = index * slot
+    finish = (index + 0.82) * slot
+    k1 = begin / duration_seconds
+    k2 = finish / duration_seconds
+    svg.extend([
+        f'<g opacity="0">',
+        f'<animate attributeName="opacity" dur="{duration_seconds}s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;{k1:.6f};{k2:.6f};{(finish + 0.01) / duration_seconds:.6f};1"/>',
+        f'<text x="28" y="65" fill="#00ff99" font-family="monospace" font-size="17" font-weight="bold">{xml_escape(year)}  /  {xml_escape(name)}</text>',
+        f'<text x="28" y="91" fill="#d5e7dc" font-family="monospace" font-size="12">{xml_escape(brief)}</text>',
+        '</g>'
+    ])
+svg.append('</svg>')
+(ROOT / "assets" / "incident-rotation.svg").write_text("\\n".join(svg) + "\\n", encoding="utf-8")
+print(f"Rendered continuous ticker with {len(items)} incident briefs; one cycle takes 10 minutes.")
