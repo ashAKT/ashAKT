@@ -6,4 +6,6 @@
 <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents.svg?v=18#gh-dark-mode-only" alt="Animated cybersecurity incident archive showing attack vector, impact and significance" width="100%">
 <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents-light.svg?v=16#gh-light-mode-only" alt="Animated cybersecurity incident archive showing attack vector, impact and significance" width="100%">
 
+
+<p align="center"><a href="https://ashakt.github.io/ashAKT/"><strong>↗ Open Live Global Threat Map</strong></a><br><sub>Public threat-intelligence indicators · refreshed automatically</sub></p>
 </div>
