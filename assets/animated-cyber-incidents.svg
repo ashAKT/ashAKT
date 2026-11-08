@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="540" viewBox="0 0 1100 540" role="img" aria-labelledby="title desc">
 <title id="title">Animated Cyber Incident Archive</title>
 <desc id="desc">One hundred cybersecurity incidents shown one at a time in descending year order, each with attack vector, impact and significance.</desc>
-<rect width="100%" height="100%" fill="#050c09"/>
+
 <style>
 text{font-family:DejaVu Sans Mono,Consolas,monospace;}
 @keyframes incident-cycle {
