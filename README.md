@@ -5,6 +5,6 @@
 
 <br><br><br>
 
-<img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents.svg" alt="Animated cybersecurity incident archive showing attack vector, impact and significance" width="100%">
+<img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents.svg" alt="Animated cybersecurity incident archive showing attack vector, impact and significance" width="85%">
 
 </div>
