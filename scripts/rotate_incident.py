@@ -147,11 +147,11 @@ svg = [
 for index, (year, name, brief) in enumerate(items):
     begin = index * slot
     finish = (index + 0.82) * slot
-    k1 = begin / duration_seconds
+    k1 = (begin + 0.01) / duration_seconds
     k2 = finish / duration_seconds
     svg.extend([
         f'<g opacity="0">',
-        f'<animate attributeName="opacity" dur="{duration_seconds}s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;{k1:.6f};{k2:.6f};{(finish + 0.01) / duration_seconds:.6f};1"/>',
+        f'<animate attributeName="opacity" dur="{duration_seconds}s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;{k1:.6f};{k2:.6f};{(finish + 0.02) / duration_seconds:.6f};1"/>',
         f'<text x="28" y="65" fill="#00ff99" font-family="monospace" font-size="17" font-weight="bold">{xml_escape(year)}  /  {xml_escape(name)}</text>',
         f'<text x="28" y="91" fill="#d5e7dc" font-family="monospace" font-size="12">{xml_escape(brief)}</text>',
         '</g>'
