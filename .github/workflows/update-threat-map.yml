@@ -1,0 +1,45 @@
+name: Update live threat map
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "docs/**"
+      - "scripts/update_threat_data.py"
+      - ".github/workflows/update-threat-map.yml"
+  schedule:
+    - cron: "17,47 * * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "github-pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch public threat intelligence
+        run: python scripts/update_threat_data.py
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
