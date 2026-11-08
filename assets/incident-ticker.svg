@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="190" viewBox="0 0 1000 190" role="img" aria-labelledby="title desc">
+  <title id="title">Cyber incident ticker</title>
+  <desc id="desc">Five major cybersecurity incidents, shown one at a time with a heading and a multi-line summary.</desc>
+  <rect width="1000" height="190" rx="12" fill="#07131b" stroke="#00f7a5" stroke-opacity=".55"/>
+  <g font-family="Fira Code, Consolas, monospace" text-anchor="middle">
+    <g fill="#00f7a5" font-size="20" font-weight="600">
+      <text x="500" y="48">2017 / NOTPETYA</text>
+      <text x="500" y="48" opacity="0">2017 / WANNACRY</text>
+      <text x="500" y="48" opacity="0">2017 / EQUIFAX</text>
+      <text x="500" y="48" opacity="0">2020 / SOLARWINDS SUNBURST</text>
+      <text x="500" y="48" opacity="0">2021 / COLONIAL PIPELINE</text>
+    </g>
+    <g fill="#d7e5e9" font-size="14">
+      <text x="500" y="88"><tspan x="500">A compromised M.E.Doc software update delivered destructive malware.</tspan><tspan x="500" dy="23">It spread through networks using SMB exploits and stolen credentials,</tspan><tspan x="500" dy="23">disrupting global businesses and causing billions of dollars in damage.</tspan></text>
+      <text x="500" y="88" opacity="0"><tspan x="500">Exploited Windows SMBv1 (MS17-010) using the EternalBlue exploit.</tspan><tspan x="500" dy="23">More than 200,000 computers across 150+ countries were affected,</tspan><tspan x="500" dy="23">including major disruption to the UK's National Health Service.</tspan></text>
+      <text x="500" y="88" opacity="0"><tspan x="500">Attackers exploited an unpatched Apache Struts flaw (CVE-2017-5638)</tspan><tspan x="500" dy="23">to access sensitive data. Personal information belonging to about</tspan><tspan x="500" dy="23">147 million people was exposed.</tspan></text>
+      <text x="500" y="88" opacity="0"><tspan x="500">Attackers compromised the software build process and inserted a</tspan><tspan x="500" dy="23">backdoor into Orion updates, enabling stealthy access and espionage</tspan><tspan x="500" dy="23">across government agencies and enterprise networks.</tspan></text>
+      <text x="500" y="88" opacity="0"><tspan x="500">DarkSide ransomware disrupted operations and forced a temporary</tspan><tspan x="500" dy="23">shutdown of a major US fuel pipeline, highlighting the operational</tspan><tspan x="500" dy="23">and economic impact ransomware can have on critical infrastructure.</tspan></text>
+    </g>
+    <g fill="#00f7a5" font-size="11" letter-spacing="2">
+      <text x="500" y="174">THREAT LANDSCAPE / INCIDENT BRIEF</text>
+    </g>
+  </g>
+  <g>
+    <animate attributeName="opacity" values="1;1;0;0;0;0;1" keyTimes="0;.2;.2;.4;.6;.8;1" dur="25s" repeatCount="indefinite"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1;0;0;0" keyTimes="0;.2;.2;.4;.4;.8;1" dur="25s" repeatCount="indefinite"/>
+  </g>
+</svg>
