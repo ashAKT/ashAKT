@@ -4,6 +4,6 @@
 
   <br><br>
 
-  <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/cyber-incident-ticker.gif?v=37547281" alt="Typewriter-animated archive of 100 cybersecurity incidents, including what happened and the impact" width="100%">
+  <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/cyber-incident-ticker.gif" alt="Typewriter-animated archive of 100 cybersecurity incidents, including what happened and the impact" width="100%">
 
 </div>
