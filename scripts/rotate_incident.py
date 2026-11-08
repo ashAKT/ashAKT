@@ -150,17 +150,17 @@ catalog += ["", "## Further reading", "",
 
 # Render a typewriter-style animated GIF: each case is typed in,
 # then held on screen before the next randomly selected incident begins.
-WIDTH, HEIGHT = 1200, 300
+WIDTH, HEIGHT = 1000, 260
 BG = (8, 15, 20)
 GREEN = (0, 255, 153)
 WHITE = (225, 235, 240)
 MUTED = (120, 150, 160)
 FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 BOLD_FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
-title_font = ImageFont.truetype(BOLD_FONT_PATH, 26)
-label_font = ImageFont.truetype(BOLD_FONT_PATH, 17)
-body_font = ImageFont.truetype(FONT_PATH, 17)
-small_font = ImageFont.truetype(FONT_PATH, 14)
+title_font = ImageFont.truetype(BOLD_FONT_PATH, 22)
+label_font = ImageFont.truetype(BOLD_FONT_PATH, 15)
+body_font = ImageFont.truetype(FONT_PATH, 15)
+small_font = ImageFont.truetype(FONT_PATH, 12)
 
 def wrap_pixels(draw, text, font, max_width):
     words = text.split()
@@ -227,20 +227,22 @@ for index, (year, name, brief, impact) in enumerate(items, 1):
 
     # Type the incident summary first, then the impact, and hold the
     # completed case on screen so the viewer has time to read it.
-    for count in range(0, len(brief_text) + 1, 22):
+    for count in range(0, len(brief_text) + 1, 42):
         frames.append(render_case(year, name, brief, impact, index, count, 0))
-        durations.append(90)
+        durations.append(110)
     frames.append(render_case(year, name, brief, impact, index, len(brief_text), 0))
-    durations.append(180)
+    durations.append(160)
 
-    for count in range(0, len(impact_text) + 1, 22):
+    for count in range(0, len(impact_text) + 1, 42):
         frames.append(render_case(year, name, brief, impact, index, len(brief_text), count))
         durations.append(90)
     frames.append(render_case(year, name, brief, impact, index, len(brief_text), len(impact_text)))
-    durations.append(3500)
+    durations.append(2400)
 
 gif_path = ROOT / "assets" / "cyber-incident-ticker.gif"
 gif_path.parent.mkdir(parents=True, exist_ok=True)
+palette = frames[0].quantize(colors=96, method=Image.Quantize.MEDIANCUT)
+frames = [frame.quantize(palette=palette, dither=Image.Dither.NONE) for frame in frames]
 frames[0].save(
     gif_path, save_all=True, append_images=frames[1:],
     duration=durations, loop=0, optimize=True, disposal=2
