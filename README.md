@@ -3,10 +3,7 @@
 <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/minimal-cyber-banner.svg" alt="Cybersecurity banner" width="100%">
 
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents.svg?v=17">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents-light.svg?v=15">
-  <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents-light.svg?v=15" alt="Animated cybersecurity incident archive showing attack vector, impact and significance" width="100%">
-</picture>
+<img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents.svg?v=18#gh-dark-mode-only" alt="Animated cybersecurity incident archive showing attack vector, impact and significance" width="100%">
+<img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents-light.svg?v=16#gh-light-mode-only" alt="Animated cybersecurity incident archive showing attack vector, impact and significance" width="100%">
 
 </div>
