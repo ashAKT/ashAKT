@@ -128,34 +128,26 @@ catalog += ["", "## Further reading", "",
 "**Curation note:** This is an educational selection, not a definitive ranking. Some entries describe campaigns or broader incident patterns. Dates, attribution and impact figures should be verified against primary sources before formal reporting."]
 (ROOT / "CYBER_INCIDENTS.md").write_text("\n".join(catalog) + "\n", encoding="utf-8")
 
-# Shuffle the complete list and render a continuously looping SVG ticker.
+# Shuffle the complete list and build a continuously animated typing-SVG URL.
+# The external typing-SVG renderer is used because GitHub's README image proxy
+# does not reliably play SVG SMIL animations.
 random.shuffle(items)
-duration_seconds = 600
-slot = duration_seconds / len(items)
+incident_lines = ";".join(f"{year} / {name}" for year, name, _ in items)
+typing_url = (
+    "https://readme-typing-svg.demolab.com/?"
+    "font=Fira+Code&size=16&pause=900&color=00FF99"
+    "&center=true&vCenter=true&width=1000&height=50"
+    "&repeat=true&lines=" + quote_plus(incident_lines)
+)
+readme = f"""<div align="center">
 
-def xml_escape(value):
-    return (value.replace("&", "&amp;").replace("<", "&lt;")
-                 .replace(">", "&gt;").replace('"', "&quot;")
-                 .replace("'", "&apos;"))
+  <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/minimal-cyber-banner.svg" alt="The best defense begins before the attack" width="100%">
 
-svg = [
-    '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="118" viewBox="0 0 1000 118">',
-    '<rect width="100%" height="100%" rx="10" fill="#080d0b"/>',
-    '<rect x="1" y="1" width="998" height="116" rx="9" fill="none" stroke="#00ff99" stroke-opacity=".45"/>',
-    '<text x="28" y="30" fill="#00ff99" font-family="monospace" font-size="12" letter-spacing="2">CYBERSECURITY HISTORY • 100 LANDMARK INCIDENTS</text>',
-]
-for index, (year, name, brief) in enumerate(items):
-    begin = index * slot
-    finish = (index + 0.82) * slot
-    k1 = (begin + 0.01) / duration_seconds
-    k2 = finish / duration_seconds
-    svg.extend([
-        f'<g opacity="0">',
-        f'<animate attributeName="opacity" dur="{duration_seconds}s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;{k1:.6f};{k2:.6f};{(finish + 0.02) / duration_seconds:.6f};1"/>',
-        f'<text x="28" y="65" fill="#00ff99" font-family="monospace" font-size="17" font-weight="bold">{xml_escape(year)}  /  {xml_escape(name)}</text>',
-        f'<text x="28" y="91" fill="#d5e7dc" font-family="monospace" font-size="12">{xml_escape(brief)}</text>',
-        '</g>'
-    ])
-svg.append('</svg>')
-(ROOT / "assets" / "incident-rotation.svg").write_text("\n".join(svg) + "\n", encoding="utf-8")
-print(f"Rendered continuous ticker with {len(items)} incident briefs; one cycle takes 10 minutes.")
+  <br><br>
+
+  <img src="{typing_url}" alt="Continuously rotating briefs of 100 landmark cybersecurity incidents" width="100%">
+
+</div>
+"""
+(ROOT / "README.md").write_text(readme, encoding="utf-8")
+print(f"Generated continuously animated ticker URL for {len(items)} incidents ({len(typing_url)} URL characters).")
