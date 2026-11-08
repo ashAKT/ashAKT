@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - name: Select a random incident and refresh catalog
+      - name: Shuffle the continuous 100-incident ticker
         run: python scripts/rotate_incident.py
       - name: Commit updated profile and catalog
         run: |
