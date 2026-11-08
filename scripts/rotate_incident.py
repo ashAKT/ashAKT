@@ -135,7 +135,7 @@ random.shuffle(items)
 incident_lines = ";".join(f"{year} / {name}" for year, name, _ in items)
 typing_url = (
     "https://readme-typing-svg.demolab.com/?"
-    "font=Fira+Code&size=16&pause=900&color=00FF99"
+    "font=Fira+Code&size=16&duration=5000&pause=5000&color=00FF99"
     "&center=true&vCenter=true&width=1000&height=50"
     "&repeat=true&lines=" + quote_plus(incident_lines)
 )
