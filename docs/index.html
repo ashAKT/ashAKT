@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f9fc">
+  <meta name="description" content="Public cyber threat intelligence map built from the abuse.ch Feodo Tracker feed.">
+  <title>Live Threat Map | ashAKT</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <style>
+    :root{color-scheme:light;--ink:#17212b;--muted:#667485;--line:#e3e8ef;--panel:#fff;--accent:#2563a6;--bg:#f5f7fa}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    main{max-width:1180px;margin:0 auto;padding:30px 22px 46px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
+    .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+    h1{font-size:28px;letter-spacing:-.04em;margin:5px 0;font-weight:700}.sub{color:var(--muted);margin:0}
+    .status{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 12px;color:#27734b;font-size:12px;white-space:nowrap}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+    .stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+    .stat{padding:15px 17px}.stat span{display:block;color:var(--muted);font-size:12px}.stat strong{display:block;font-size:25px;letter-spacing:-.03em;margin-top:3px}
+    .panel{overflow:hidden}.map-head{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}
+    h2{font-size:14px;margin:0}.small{font-size:11px;color:var(--muted)}#map{height:510px;background:#edf2f6}
+    .below{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.list{padding:16px 18px}
+    .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #eef1f5}.row:last-child{border:0}
+    .row b{font-weight:600}.row span{color:var(--muted);text-align:right}.foot{color:var(--muted);font-size:11px;margin:18px 2px}.foot a{color:var(--accent);text-decoration:none}
+    .leaflet-popup-content{font:12px/1.6 Inter,system-ui,sans-serif}.legend{background:#fff;padding:8px 10px;border:1px solid var(--line);border-radius:8px;color:#445}
+    @media(max-width:650px){main{padding:22px 13px}.top{align-items:flex-start;flex-direction:column}h1{font-size:24px}.stats{gap:7px}.stat{padding:11px}.stat strong{font-size:20px}#map{height:390px}.below{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div><div class="eyebrow">ashAKT · Threat Intelligence</div><h1>Global Threat Map</h1><p class="sub">Publicly reported botnet command-and-control infrastructure</p></div>
+    <div class="status" id="status">● Loading latest feed</div>
+  </header>
+  <section class="stats" aria-label="Threat intelligence summary">
+    <div class="stat"><span>IPv4 indicators</span><strong id="total">—</strong></div>
+    <div class="stat"><span>Countries / territories</span><strong id="countries">—</strong></div>
+    <div class="stat"><span>Last feed refresh (UTC)</span><strong id="updated" style="font-size:16px;margin-top:10px">—</strong></div>
+  </section>
+  <section class="panel">
+    <div class="map-head"><h2>Indicator distribution by reported country</h2><span class="small">Circle size represents indicator count</span></div>
+    <div id="map" role="img" aria-label="World map showing reported botnet command-and-control IP indicators by country"></div>
+  </section>
+  <section class="below">
+    <div class="panel list"><h2>Top countries</h2><div id="top-countries" class="small" style="margin-top:8px">Loading…</div></div>
+    <div class="panel list"><h2>Most reported malware families</h2><div id="top-malware" class="small" style="margin-top:8px">Loading…</div></div>
+  </section>
+  <p class="foot">Data: <a href="https://feodotracker.abuse.ch/" rel="noopener">abuse.ch Feodo Tracker</a>. This map visualizes published threat-intelligence indicators and their reported country attribution. It does not show real-time attack traffic, victims, or attacks targeting ashAKT. Country attribution may reflect hosting or infrastructure location and can be imprecise. <span id="notice"></span></p>
+  <p class="foot"><a href="https://github.com/ashAKT/ashAKT">← Back to GitHub profile</a></p>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(async()=>{
+  const $=id=>document.getElementById(id);
+  const fmt=n=>Number(n||0).toLocaleString();
+  const map=L.map('map',{scrollWheelZoom:false,worldCopyJump:true}).setView([22,5],2);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:8}).addTo(map);
+  const overlay=L.layerGroup().addTo(map);
+  try{
+    const [dataRes,geoRes]=await Promise.all([
+      fetch('./data/threats.json?'+Date.now(),{cache:'no-store'}),
+      fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson')
+    ]);
+    if(!dataRes.ok) throw new Error('Threat feed snapshot unavailable ('+dataRes.status+')');
+    const data=await dataRes.json();
+    const geo=geoRes.ok?await geoRes.json():null;
+    $('total').textContent=fmt(data.total);
+    $('countries').textContent=fmt(Object.keys(data.countries||{}).filter(k=>k!=='ZZ').length);
+    $('updated').textContent=new Date(data.updated_at).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short',timeZone:'UTC'})+' UTC';
+    $('status').textContent='● Feed snapshot loaded';
+    $('notice').textContent=' Last generated: '+data.updated_at+'.';
+    const countryNames=new Intl.DisplayNames(['en'],{type:'region'});
+    const name=code=>{try{return countryNames.of(code)||code}catch(e){return code}};
+    const entries=Object.entries(data.countries||{}).filter(([c])=>c!=='ZZ').sort((a,b)=>b[1]-a[1]);
+    const max=Math.max(1,...entries.map(x=>x[1]));
+    if(geo){
+      geo.features.forEach(feature=>{
+        const p=feature.properties||{};
+        const code=(p.ISO_A2||p.iso_a2||'').toUpperCase();
+        const count=data.countries[code];
+        if(!count)return;
+        const bounds=L.geoJSON(feature).getBounds();
+        if(!bounds.isValid())return;
+        const center=bounds.getCenter();
+        const radius=5+Math.sqrt(count/max)*15;
+        L.circleMarker(center,{radius,weight:1,color:'#245d91',fillColor:'#4d91c6',fillOpacity:.58})
+          .bindPopup('<b>'+name(code)+'</b><br>'+fmt(count)+' reported IP indicators')
+          .addTo(overlay);
+      });
+    }
+    $('top-countries').innerHTML=entries.slice(0,8).map(([c,n])=>'<div class="row"><b>'+name(c)+'</b><span>'+fmt(n)+'</span></div>').join('')||'No country-coded indicators in this snapshot.';
+    const malware={};data.records.forEach(r=>{const m=r.malware||'Unknown';malware[m]=(malware[m]||0)+1});
+    $('top-malware').innerHTML=Object.entries(malware).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([m,n])=>'<div class="row"><b>'+m.replace(/[&<>"]/g,'')+'</b><span>'+fmt(n)+'</span></div>').join('')||'No malware labels available.';
+  }catch(err){
+    $('status').textContent='● Feed unavailable';
+    $('status').style.color='#a33';
+    $('notice').textContent=' '+err.message;
+    $('top-countries').textContent='Could not load the latest feed snapshot.';
+    $('top-malware').textContent='Could not load the latest feed snapshot.';
+  }
+})();
+</script>
+</body>
+</html>
