@@ -148,20 +148,19 @@ catalog += ["", "## Further reading", "",
 "**Curation note:** Educational selection, not a definitive ranking. Some entries describe campaigns or broader incident patterns. Dates, attribution and impact figures should be verified against primary sources before formal reporting."]
 (ROOT / "CYBER_INCIDENTS.md").write_text("\n".join(catalog) + "\n", encoding="utf-8")
 
-# Animated GIFs are supported in GitHub README images. Each incident gets its
-# own slide so the full brief and impact remain readable rather than clipped
-# into a long one-line typing animation.
-WIDTH, HEIGHT = 1200, 260
+# Render a typewriter-style animated GIF: each case is typed in,
+# then held on screen before the next randomly selected incident begins.
+WIDTH, HEIGHT = 1200, 300
 BG = (8, 15, 20)
 GREEN = (0, 255, 153)
 WHITE = (225, 235, 240)
 MUTED = (120, 150, 160)
 FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 BOLD_FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
-title_font = ImageFont.truetype(BOLD_FONT_PATH, 27)
-label_font = ImageFont.truetype(BOLD_FONT_PATH, 18)
-body_font = ImageFont.truetype(FONT_PATH, 18)
-small_font = ImageFont.truetype(FONT_PATH, 15)
+title_font = ImageFont.truetype(BOLD_FONT_PATH, 26)
+label_font = ImageFont.truetype(BOLD_FONT_PATH, 17)
+body_font = ImageFont.truetype(FONT_PATH, 17)
+small_font = ImageFont.truetype(FONT_PATH, 14)
 
 def wrap_pixels(draw, text, font, max_width):
     words = text.split()
@@ -178,37 +177,73 @@ def wrap_pixels(draw, text, font, max_width):
         lines.append(current)
     return lines
 
-frames = []
-for index, (year, name, brief, impact) in enumerate(items, 1):
+def reveal_steps(text, chunk=18):
+    """Return progressively longer text prefixes for a typewriter effect."""
+    if not text:
+        return [""]
+    return [text[:end] for end in range(chunk, len(text), chunk)] + [text]
+
+def render_case(year, name, brief, impact, number, brief_chars, impact_chars):
     frame = Image.new("RGB", (WIDTH, HEIGHT), BG)
     draw = ImageDraw.Draw(frame)
-    draw.rectangle((0, 0, WIDTH, 7), fill=GREEN)
-    draw.text((42, 25), "CYBER INCIDENT ARCHIVE  //  HISTORICAL CASE FILE", font=small_font, fill=MUTED)
-    draw.text((42, 55), f"{year}  |  {name}", font=title_font, fill=GREEN)
-    draw.line((42, 100, WIDTH - 42, 100), fill=(35, 75, 68), width=2)
+    draw.rectangle((0, 0, WIDTH, 6), fill=GREEN)
+    draw.text((40, 22), "CYBER INCIDENT ARCHIVE  //  HISTORICAL CASE FILE", font=small_font, fill=MUTED)
+    draw.text((40, 49), f"{year}  |  {name}", font=title_font, fill=GREEN)
+    draw.line((40, 91, WIDTH - 40, 91), fill=(35, 75, 68), width=2)
 
-    y = 120
-    draw.text((42, y), "WHAT HAPPENED", font=label_font, fill=WHITE)
-    y += 30
-    for line in wrap_pixels(draw, brief, body_font, WIDTH - 84)[:2]:
-        draw.text((42, y), line, font=body_font, fill=WHITE)
-        y += 25
+    draw.text((40, 107), "WHAT HAPPENED", font=label_font, fill=WHITE)
+    y = 135
+    brief_lines = wrap_pixels(draw, brief, body_font, WIDTH - 80)
+    remaining = brief_chars
+    for line in brief_lines[:2]:
+        visible = line[:max(0, min(len(line), remaining))]
+        draw.text((40, y), visible, font=body_font, fill=WHITE)
+        remaining -= len(line)
+        y += 24
 
     y += 7
-    draw.text((42, y), "IMPACT", font=label_font, fill=GREEN)
-    y += 30
-    for line in wrap_pixels(draw, impact, body_font, WIDTH - 84)[:2]:
-        draw.text((42, y), line, font=body_font, fill=WHITE)
-        y += 25
+    draw.text((40, y), "IMPACT", font=label_font, fill=GREEN)
+    y += 25
+    impact_lines = wrap_pixels(draw, impact, body_font, WIDTH - 80)
+    remaining = impact_chars
+    for line in impact_lines[:2]:
+        visible = line[:max(0, min(len(line), remaining))]
+        draw.text((40, y), visible, font=body_font, fill=WHITE)
+        remaining -= len(line)
+        y += 24
 
-    draw.text((WIDTH - 150, HEIGHT - 28), f"{index:03d} / 100", font=small_font, fill=MUTED)
-    frames.append(frame)
+    draw.text((WIDTH - 130, HEIGHT - 25), f"{number:03d} / 100", font=small_font, fill=MUTED)
+    return frame
+
+frames = []
+durations = []
+for index, (year, name, brief, impact) in enumerate(items, 1):
+    probe = Image.new("RGB", (WIDTH, HEIGHT), BG)
+    probe_draw = ImageDraw.Draw(probe)
+    brief_lines = wrap_pixels(probe_draw, brief, body_font, WIDTH - 80)[:2]
+    impact_lines = wrap_pixels(probe_draw, impact, body_font, WIDTH - 80)[:2]
+    brief_text = " ".join(brief_lines)
+    impact_text = " ".join(impact_lines)
+
+    # Type the incident summary first, then the impact, and hold the
+    # completed case on screen so the viewer has time to read it.
+    for count in range(0, len(brief_text) + 1, 22):
+        frames.append(render_case(year, name, brief, impact, index, count, 0))
+        durations.append(90)
+    frames.append(render_case(year, name, brief, impact, index, len(brief_text), 0))
+    durations.append(180)
+
+    for count in range(0, len(impact_text) + 1, 22):
+        frames.append(render_case(year, name, brief, impact, index, len(brief_text), count))
+        durations.append(90)
+    frames.append(render_case(year, name, brief, impact, index, len(brief_text), len(impact_text)))
+    durations.append(3500)
 
 gif_path = ROOT / "assets" / "cyber-incident-ticker.gif"
 gif_path.parent.mkdir(parents=True, exist_ok=True)
 frames[0].save(
     gif_path, save_all=True, append_images=frames[1:],
-    duration=8000, loop=0, optimize=True, disposal=2
+    duration=durations, loop=0, optimize=True, disposal=2
 )
 
 readme = f"""<div align="center">
@@ -217,9 +252,9 @@ readme = f"""<div align="center">
 
   <br><br>
 
-  <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/cyber-incident-ticker.gif" alt="Animated archive: 100 cybersecurity incidents, each showing what happened and its impact" width="100%">
+  <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/cyber-incident-ticker.gif" alt="Typewriter-animated archive of 100 cybersecurity incidents, including what happened and the impact" width="100%">
 
 </div>
 """
 (ROOT / "README.md").write_text(readme, encoding="utf-8")
-print(f"Generated a {len(frames)}-slide incident ticker GIF and the incident catalogue.")
+print(f"Generated a typewriter-animated ticker with {len(items)} incident cases and {len(frames)} animation frames.")
