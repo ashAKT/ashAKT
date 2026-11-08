@@ -13,7 +13,7 @@ text{font-family:DejaVu Sans Mono,Consolas,monospace;}
 }
 .incident { opacity: 0; animation: incident-cycle 800s linear infinite; }
 </style>
-<text x="550" y="52" text-anchor="middle" fill="#58ff91" font-size="14" font-weight="700" letter-spacing="0.4">The Cyber Threat Chronicles</text>
+<text x="550" y="52" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="700" letter-spacing="0.4">The Cyber Threat Chronicles</text>
 <g class="incident" style="animation-delay:-0s">
 <text x="48" y="96" fill="#58ff91" font-size="24" font-weight="700">AI-assisted social engineering (2026)</text>
 <text x="48" y="135" fill="#80bd96" font-size="13">CASE 001 / 100</text>
