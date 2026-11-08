@@ -2,7 +2,6 @@
 
 <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/minimal-cyber-banner.svg" alt="Cybersecurity banner" width="100%">
 
-<br><br><br>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents.svg?v=4">
