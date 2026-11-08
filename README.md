@@ -4,6 +4,10 @@
 
 <br><br><br>
 
-<img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents.svg?v=2" alt="Animated cybersecurity incident archive showing attack vector, impact and significance" width="100%">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents.svg?v=3">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents-light.svg?v=1">
+  <img src="https://raw.githubusercontent.com/ashAKT/ashAKT/main/assets/animated-cyber-incidents.svg?v=3" alt="Animated cybersecurity incident archive showing attack vector, impact and significance" width="100%">
+</picture>
 
 </div>
